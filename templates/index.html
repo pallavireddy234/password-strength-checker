@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Password Strength Checker - Analyze password security in real-time">
+    <meta name="theme-color" content="#0f172a">
+    
+    <title>Password Strength Checker - Premium Security Analysis</title>
+    
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <!-- Animated background -->
+    <div class="background-grid"></div>
+    <div class="background-glow"></div>
+    
+    <!-- Main container -->
+    <div class="container">
+        <!-- Header section -->
+        <header class="header">
+            <div class="header-content">
+                <div class="logo-section">
+                    <div class="logo-icon">◉</div>
+                    <span class="logo-text">SECURITY LAB</span>
+                </div>
+                <h1 class="main-title">PASSWORD STRENGTH ANALYZER</h1>
+                <p class="main-subtitle">Measure password resilience instantly</p>
+            </div>
+        </header>
+
+        <!-- Main analyzer card -->
+        <main class="analyzer-section">
+            <div class="analyzer-card">
+                <!-- Password input section -->
+                <div class="password-input-section">
+                    <label for="password-input" class="input-label">Enter Password</label>
+                    <div class="password-input-wrapper">
+                        <input 
+                            type="password" 
+                            id="password-input" 
+                            class="password-input" 
+                            placeholder="Type your password here..."
+                            aria-label="Password input"
+                            autocomplete="off"
+                        >
+                        <button 
+                            id="toggle-visibility-btn" 
+                            class="toggle-btn" 
+                            type="button"
+                            title="Toggle password visibility"
+                            aria-label="Toggle password visibility"
+                        >
+                            <svg class="eye-icon" viewBox="0 0 24 24" width="20" height="20">
+                                <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
+                            </svg>
+                        </button>
+                        <button 
+                            id="clear-btn" 
+                            class="clear-btn" 
+                            type="button"
+                            title="Clear password field"
+                            aria-label="Clear password"
+                        >
+                            ✕
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Initial state (when password is empty) -->
+                <div id="initial-state" class="state initial-state">
+                    <div class="initial-content">
+                        <div class="initial-icon">🔐</div>
+                        <p>Start typing a password to see real-time security analysis</p>
+                        <p class="privacy-notice">Your password is analyzed locally and never stored</p>
+                    </div>
+                </div>
+
+                <!-- Analysis state (when password is entered) -->
+                <div id="analysis-state" class="state analysis-state hidden">
+                    <!-- Strength meter -->
+                    <div class="strength-section">
+                        <div class="strength-meter">
+                            <div class="strength-bar-background">
+                                <div id="strength-bar" class="strength-bar" style="width: 0%"></div>
+                            </div>
+                        </div>
+                        <div class="strength-info">
+                            <span id="strength-level" class="strength-level">-</span>
+                            <span id="strength-score" class="strength-score">0 / 100</span>
+                        </div>
+                    </div>
+
+                    <!-- Security checks -->
+                    <div class="checks-section">
+                        <div class="checks-title">Security Checks</div>
+                        <div class="checks-grid">
+                            <div class="check-item">
+                                <span class="check-icon" id="check-length">○</span>
+                                <span class="check-label">8+ Characters</span>
+                            </div>
+                            <div class="check-item">
+                                <span class="check-icon" id="check-uppercase">○</span>
+                                <span class="check-label">Uppercase</span>
+                            </div>
+                            <div class="check-item">
+                                <span class="check-icon" id="check-lowercase">○</span>
+                                <span class="check-label">Lowercase</span>
+                            </div>
+                            <div class="check-item">
+                                <span class="check-icon" id="check-numbers">○</span>
+                                <span class="check-label">Numbers</span>
+                            </div>
+                            <div class="check-item">
+                                <span class="check-icon" id="check-symbols">○</span>
+                                <span class="check-label">Symbols</span>
+                            </div>
+                            <div class="check-item">
+                                <span class="check-icon" id="check-common">○</span>
+                                <span class="check-label">Not Common</span>
+                            </div>
+                            <div class="check-item">
+                                <span class="check-icon" id="check-repetition">○</span>
+                                <span class="check-label">No Repetition</span>
+                            </div>
+                            <div class="check-item">
+                                <span class="check-icon" id="check-sequential">○</span>
+                                <span class="check-label">No Sequences</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Entropy section -->
+                    <div class="entropy-section">
+                        <div class="entropy-header">
+                            <span class="entropy-title">Estimated Entropy</span>
+                            <button class="info-btn" type="button" title="What is entropy?" aria-label="Entropy info">
+                                ?
+                            </button>
+                        </div>
+                        <div class="entropy-value">
+                            <span id="entropy-value">0</span>
+                            <span class="entropy-unit">bits</span>
+                        </div>
+                        <div class="entropy-bar-background">
+                            <div id="entropy-bar" class="entropy-bar" style="width: 0%"></div>
+                        </div>
+                        <div id="entropy-tooltip" class="entropy-tooltip hidden">
+                            <p><strong>Entropy</strong> measures password randomness. Higher entropy = more resistant to guessing.</p>
+                            <p>Formula: log₂(character_pool) × length × diversity_factor</p>
+                            <p><small>This is an estimate, not a guarantee of real-world crack time.</small></p>
+                        </div>
+                    </div>
+
+                    <!-- Recommendations section -->
+                    <div class="recommendations-section">
+                        <div class="recommendations-title">Recommendations</div>
+                        <div id="recommendations-list" class="recommendations-list">
+                            <!-- Populated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Error state -->
+                <div id="error-state" class="state error-state hidden">
+                    <div class="error-content">
+                        <div class="error-icon">⚠</div>
+                        <p id="error-message">An error occurred</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Generator section -->
+            <div class="generator-section">
+                <h2 class="generator-title">Generate Strong Password</h2>
+                
+                <div class="generator-card">
+                    <!-- Generator controls -->
+                    <div class="generator-controls">
+                        <div class="control-group">
+                            <label for="length-input" class="control-label">Length</label>
+                            <div class="length-control">
+                                <input 
+                                    type="range" 
+                                    id="length-slider" 
+                                    class="length-slider" 
+                                    min="8" 
+                                    max="32" 
+                                    value="16"
+                                    aria-label="Password length"
+                                >
+                                <input 
+                                    type="number" 
+                                    id="length-input" 
+                                    class="length-input" 
+                                    min="8" 
+                                    max="128" 
+                                    value="16"
+                                    aria-label="Password length input"
+                                >
+                            </div>
+                        </div>
+
+                        <div class="checkbox-group">
+                            <label class="checkbox-item">
+                                <input 
+                                    type="checkbox" 
+                                    id="gen-uppercase" 
+                                    class="checkbox-input" 
+                                    checked
+                                    aria-label="Include uppercase letters"
+                                >
+                                <span class="checkbox-label">Uppercase (A-Z)</span>
+                            </label>
+                            <label class="checkbox-item">
+                                <input 
+                                    type="checkbox" 
+                                    id="gen-lowercase" 
+                                    class="checkbox-input" 
+                                    checked
+                                    aria-label="Include lowercase letters"
+                                >
+                                <span class="checkbox-label">Lowercase (a-z)</span>
+                            </label>
+                            <label class="checkbox-item">
+                                <input 
+                                    type="checkbox" 
+                                    id="gen-numbers" 
+                                    class="checkbox-input" 
+                                    checked
+                                    aria-label="Include numbers"
+                                >
+                                <span class="checkbox-label">Numbers (0-9)</span>
+                            </label>
+                            <label class="checkbox-item">
+                                <input 
+                                    type="checkbox" 
+                                    id="gen-symbols" 
+                                    class="checkbox-input" 
+                                    checked
+                                    aria-label="Include symbols"
+                                >
+                                <span class="checkbox-label">Symbols (!@#$%)</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Generated password display -->
+                    <div class="generated-password-section">
+                        <div class="password-display-wrapper">
+                            <div id="generated-password" class="password-display">••••••••••••••••</div>
+                            <button 
+                                id="copy-password-btn" 
+                                class="copy-btn" 
+                                type="button"
+                                title="Copy password to clipboard"
+                                aria-label="Copy generated password"
+                            >
+                                📋 Copy
+                            </button>
+                        </div>
+                        <div id="copy-feedback" class="copy-feedback hidden">Copied!</div>
+                    </div>
+
+                    <!-- Generate button -->
+                    <button 
+                        id="generate-btn" 
+                        class="generate-btn" 
+                        type="button"
+                        aria-label="Generate new password"
+                    >
+                        ⚡ Generate Password
+                    </button>
+                </div>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="footer-content">
+                <p class="privacy-statement">
+                    <strong>Privacy:</strong> Your password is analyzed locally in your browser. 
+                    No data is stored, logged, or sent to external services.
+                </p>
+                <p class="disclaimer">
+                    This tool provides educational password analysis. 
+                    For maximum security, test passwords you do not currently use for sensitive accounts.
+                </p>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Scripts -->
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>
