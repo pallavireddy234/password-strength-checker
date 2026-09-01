@@ -86,6 +86,7 @@ The application will start on `http://127.0.0.1:5000` and automatically open in 
 ### Deploy to Render.com
 
 This application is configured for easy deployment to [Render.com](https://render.com), a modern cloud platform.
+- project live at [EXPLORE PROJECT](https://password-strength-checker-dlol.onrender.com)
 
 #### Prerequisites
 - GitHub account (to host the repository)
@@ -109,7 +110,7 @@ This application is configured for easy deployment to [Render.com](https://rende
    - Select "Web Service"
    - Connect your GitHub repository
    - Choose the repository `password-strength-checker`
-   - project live at [EXPLORE PROJECT](https://password-strength-checker-dlol.onrender.com)
+
 
 3. **Configure the service:**
    - **Name**: `password-strength-checker` (or your preferred name)
